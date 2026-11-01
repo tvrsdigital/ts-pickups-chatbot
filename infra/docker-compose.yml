@@ -1,0 +1,74 @@
+name: ts-pickups-bot
+
+services:
+  bot-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bot
+      POSTGRES_PASSWORD: ${BOT_DB_PASSWORD}
+      POSTGRES_DB: bot
+    volumes:
+      - botdb:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bot -d bot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:${N8N_VERSION}
+    restart: unless-stopped
+    depends_on:
+      bot-db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:5678:5678"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      N8N_WEBHOOK_URL: https://${NGROK_DOMAIN}/
+      N8N_PROXY_HOPS: "1"
+      N8N_SECURE_COOKIE: "false"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      GENERIC_TIMEZONE: America/Sao_Paulo
+      TZ: America/Sao_Paulo
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      NODE_FUNCTION_ALLOW_BUILTIN: crypto
+      IG_APP_SECRET: ${IG_APP_SECRET}
+      IG_VERIFY_TOKEN: ${IG_VERIFY_TOKEN}
+      IG_ACCOUNT_ID: ${IG_ACCOUNT_ID}
+      GRAPH_VERSION: ${GRAPH_VERSION}
+      HASH_SALT: ${HASH_SALT}
+      TYPEBOT_URL: ${TYPEBOT_URL}
+      TYPEBOT_PUBLIC_ID: ${TYPEBOT_PUBLIC_ID}
+      DRY_RUN: ${DRY_RUN}
+    volumes:
+      - n8ndata:/home/node/.n8n
+      - ../n8n/workflows:/exports
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    depends_on:
+      - n8n
+    command: ["http", "--url=${NGROK_DOMAIN}", "--log=stdout", "n8n:5678"]
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    ports:
+      - "127.0.0.1:4040:4040"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
+
+volumes:
+  botdb:
+  n8ndata:

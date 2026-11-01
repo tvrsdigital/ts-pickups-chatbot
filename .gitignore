@@ -1,0 +1,6 @@
+.env
+*.env
+!.env.example
+infra/typebot/.env
+n8n/credentials*.json
+node_modules/

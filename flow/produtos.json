@@ -1,0 +1,12 @@
+{
+  "_nota": "Troque as URLs de exemplo pelos links reais do site da TS PickUps. Os nomes vêm do diagrama.",
+  "ST":      { "nome": "ST - Special Stratocaster",           "familia": "guitarra", "url": "https://SEU-SITE.com.br/captadores/st" },
+  "VERSUS":  { "nome": "VERSUS",                              "familia": "guitarra", "url": "https://SEU-SITE.com.br/captadores/versus" },
+  "OUTSIDE": { "nome": "OutSide",                             "familia": "guitarra", "url": "https://SEU-SITE.com.br/captadores/outside" },
+  "DIAMOND": { "nome": "Diamond",                             "familia": "guitarra", "url": "https://SEU-SITE.com.br/captadores/diamond" },
+  "PUC":     { "nome": "PUC - Insane Bass Pickup",            "familia": "baixo",    "url": "https://SEU-SITE.com.br/captadores/puc" },
+  "PSAM":    { "nome": "PSAM - Precision Signature",          "familia": "baixo",    "url": "https://SEU-SITE.com.br/captadores/psam" },
+  "BSL4":    { "nome": "BSL4 - Jazz Bass Pickup",             "familia": "baixo",    "url": "https://SEU-SITE.com.br/captadores/bsl4" },
+  "BSL5":    { "nome": "BSL5 - Jazz Bass Pickup",             "familia": "baixo",    "url": "https://SEU-SITE.com.br/captadores/bsl5" },
+  "PJ":      { "nome": "PJ - Precision Jazz Bass Pickup",     "familia": "baixo",    "url": "https://SEU-SITE.com.br/captadores/pj" }
+}

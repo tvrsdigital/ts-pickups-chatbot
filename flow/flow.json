@@ -1,0 +1,94 @@
+{
+  "$schema": "./flow.schema.json",
+  "meta": {
+    "name": "TS PickUps - assistente virtual",
+    "version": "1.0.0",
+    "language": "pt-BR",
+    "source": "Fluxo_CHATBOT.png (diagrama original do projeto)",
+    "notes": [
+      "Textos marcados como 'diagrama' foram copiados do diagrama; os demais foram escritos para dar contexto a cada pergunta e devem ser revisados pelo dono da marca.",
+      "Nós com 'options' são menus (botões de resposta rápida, rótulos com até 20 caracteres).",
+      "Nós com 'produto' são recomendações; o id deve existir em produtos.json.",
+      "Nós com 'marker' são terminais: HANDOFF = entregar a um humano, END = encerrar a conversa.",
+      "{{url}} no nó SITE é substituído pelo link do produto recomendado (variável no Typebot)."
+    ]
+  },
+  "start": "MENU",
+  "nodes": {
+    "MENU": {
+      "text": "Olá! Eu sou o assistente virtual da TS PickUps. Como posso ajudar?",
+      "options": [
+        { "label": "Captadores guitarra", "next": "GUITARRA" },
+        { "label": "Captadores de baixo", "next": "BAIXO" },
+        { "label": "Falar com atendente", "next": "ATENDENTE" }
+      ]
+    },
+
+    "GUITARRA": {
+      "text": "Qual tipo de captador de guitarra você procura?",
+      "options": [
+        { "label": "Single", "next": "REC_ST" },
+        { "label": "Humbucker", "next": "ESTILO" }
+      ]
+    },
+    "ESTILO": {
+      "text": "Qual sua preferência musical?",
+      "options": [
+        { "label": "Música popular", "next": "REC_VERSUS" },
+        { "label": "Pop rock", "next": "REC_OUTSIDE" },
+        { "label": "Metal", "next": "REC_DIAMOND" }
+      ]
+    },
+
+    "BAIXO": {
+      "text": "Qual modelo de captador de baixo você procura?",
+      "options": [
+        { "label": "Precision", "next": "PRECISION" },
+        { "label": "Jazz Bass", "next": "JAZZBASS" },
+        { "label": "Jazz Precision", "next": "REC_PJ" }
+      ]
+    },
+    "PRECISION": {
+      "text": "Que tipo de som você prefere?",
+      "options": [
+        { "label": "Som pesado e potente", "next": "REC_PUC" },
+        { "label": "Som mais tradicional", "next": "REC_PSAM" }
+      ]
+    },
+    "JAZZBASS": {
+      "text": "Quantas cordas tem o seu baixo?",
+      "options": [
+        { "label": "Baixo de 4 cordas", "next": "REC_BSL4" },
+        { "label": "Baixo de 5 cordas", "next": "REC_BSL5" }
+      ]
+    },
+
+    "REC_ST":      { "text": "Sugerimos o captador ST - Special Stratocaster.",          "produto": "ST",      "next": "SITE" },
+    "REC_VERSUS":  { "text": "Indicamos o captador VERSUS.",                              "produto": "VERSUS",  "next": "SITE" },
+    "REC_OUTSIDE": { "text": "Indicamos o captador OutSide.",                             "produto": "OUTSIDE", "next": "SITE" },
+    "REC_DIAMOND": { "text": "Indicamos o captador Diamond.",                             "produto": "DIAMOND", "next": "SITE" },
+    "REC_PUC":     { "text": "Indicamos o captador PUC - Insane Bass Pickup.",            "produto": "PUC",     "next": "SITE" },
+    "REC_PSAM":    { "text": "Indicamos o captador PSAM - Precision Signature.",          "produto": "PSAM",    "next": "SITE" },
+    "REC_BSL4":    { "text": "Indicamos o captador BSL4 - Jazz Bass Pickup.",             "produto": "BSL4",    "next": "SITE" },
+    "REC_BSL5":    { "text": "Indicamos o captador BSL5 - Jazz Bass Pickup.",             "produto": "BSL5",    "next": "SITE" },
+    "REC_PJ":      { "text": "Indicamos o captador PJ - Precision Jazz Bass Pickup.",     "produto": "PJ",      "next": "SITE" },
+
+    "SITE": {
+      "text": "Entre no site para ouvir as tracks do captador indicado: {{url}}",
+      "options": [
+        { "label": "Falar com atendente", "next": "ATENDENTE" },
+        { "label": "Quero comprar", "next": "ATENDENTE" },
+        { "label": "Finalizar conversa", "next": "FIM" }
+      ]
+    },
+
+    "ATENDENTE": {
+      "text": "Você será atendido em breve. Tempo médio de resposta em horário de funcionamento: 05 minutos.\n\nHorário de funcionamento:\nseg - sex: 08:00 - 18:00\nsab: 10:00 - 15:00\ndom e feriados: fechado",
+      "marker": "HANDOFF"
+    },
+    "FIM": {
+      "text": "Obrigado pelo contato! Quando precisar, é só chamar. 🎸",
+      "marker": "END"
+    }
+  }
+}

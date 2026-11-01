@@ -1,0 +1,515 @@
+[
+  {
+    "id": 1,
+    "clicks": [
+      "Captadores guitarra",
+      "Single",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "ST",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "REC_ST",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 2,
+    "clicks": [
+      "Captadores guitarra",
+      "Single",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "ST",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "REC_ST",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 3,
+    "clicks": [
+      "Captadores guitarra",
+      "Single",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "ST",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "REC_ST",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 4,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Música popular",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "VERSUS",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_VERSUS",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 5,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Música popular",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "VERSUS",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_VERSUS",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 6,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Música popular",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "VERSUS",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_VERSUS",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 7,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Pop rock",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "OUTSIDE",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_OUTSIDE",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 8,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Pop rock",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "OUTSIDE",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_OUTSIDE",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 9,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Pop rock",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "OUTSIDE",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_OUTSIDE",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 10,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Metal",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "DIAMOND",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_DIAMOND",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 11,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Metal",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "DIAMOND",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_DIAMOND",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 12,
+    "clicks": [
+      "Captadores guitarra",
+      "Humbucker",
+      "Metal",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "DIAMOND",
+    "nodes": [
+      "MENU",
+      "GUITARRA",
+      "ESTILO",
+      "REC_DIAMOND",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 13,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som pesado e potente",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PUC",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PUC",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 14,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som pesado e potente",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PUC",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PUC",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 15,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som pesado e potente",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "PUC",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PUC",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 16,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som mais tradicional",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PSAM",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PSAM",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 17,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som mais tradicional",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PSAM",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PSAM",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 18,
+    "clicks": [
+      "Captadores de baixo",
+      "Precision",
+      "Som mais tradicional",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "PSAM",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "PRECISION",
+      "REC_PSAM",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 19,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 4 cordas",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "BSL4",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL4",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 20,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 4 cordas",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "BSL4",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL4",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 21,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 4 cordas",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "BSL4",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL4",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 22,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 5 cordas",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "BSL5",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL5",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 23,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 5 cordas",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "BSL5",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL5",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 24,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Bass",
+      "Baixo de 5 cordas",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "BSL5",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "JAZZBASS",
+      "REC_BSL5",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 25,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Precision",
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PJ",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "REC_PJ",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 26,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Precision",
+      "Quero comprar"
+    ],
+    "terminal": "HANDOFF",
+    "produto": "PJ",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "REC_PJ",
+      "SITE",
+      "ATENDENTE"
+    ]
+  },
+  {
+    "id": 27,
+    "clicks": [
+      "Captadores de baixo",
+      "Jazz Precision",
+      "Finalizar conversa"
+    ],
+    "terminal": "END",
+    "produto": "PJ",
+    "nodes": [
+      "MENU",
+      "BAIXO",
+      "REC_PJ",
+      "SITE",
+      "FIM"
+    ]
+  },
+  {
+    "id": 28,
+    "clicks": [
+      "Falar com atendente"
+    ],
+    "terminal": "HANDOFF",
+    "produto": null,
+    "nodes": [
+      "MENU",
+      "ATENDENTE"
+    ]
+  }
+]
