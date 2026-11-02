@@ -66,6 +66,8 @@ Nunca use `docker compose down -v`: o `-v` apaga os volumes, inclusive o do n8n.
 
 Para ligar, desligar e resolver erros no dia a dia, veja o [guia de operação](docs/operacao.md).
 
+Para ver o fluxo de conversa e os workflows em slides, veja a [apresentação](docs/apresentacao.md).
+
 ## Testes
 
 Todos rodam na raiz do projeto.
