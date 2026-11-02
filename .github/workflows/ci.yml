@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validar-fluxo:
+    name: Validar fluxo e rótulos
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validar fluxo e gerar os 28 caminhos
+        run: node tests/generate-paths.js
+      - name: Conferir rótulos dos botões (máx. 20 caracteres)
+        run: node tests/check-labels.js
+
+  segredos:
+    name: Procurar segredos vazados
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
