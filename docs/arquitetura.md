@@ -16,7 +16,7 @@ flowchart TD
 
   BAI -->|Precision| PRE[Qual som?]
   BAI -->|Jazz Bass| JB[Quantas cordas?]
-  BAI -->|Jazz Precision| PJ[Recomenda PJ]
+  BAI -->|Precision Jazz| PJ[Recomenda PJ]
   PRE -->|Som pesado e potente| PUC[Recomenda PUC]
   PRE -->|Som mais tradicional| PSAM[Recomenda PSAM]
   JB -->|Baixo de 4 cordas| BSL4[Recomenda BSL4]
@@ -47,7 +47,7 @@ Todas as nove recomendações levam ao mesmo bloco final (link do site) e, de l�
 | 2 | Validar Assinatura | Recalcula o HMAC-SHA256 com o App Secret e compara em tempo constante |
 | 3 | If | Assinatura inválida vai para **Descartar** |
 | 4 | Extrair eventos | Gera um item por mensagem (formatos `messaging` e `changes`), ignora ecos e marca a hora de chegada |
-| 5 | Deduplicar mid | Insere o ID da mensagem em `processed_mids`; se já existir, o fluxo para |
+| 5 | Deduplicar mid / Mensagem nova? | Insere o ID da mensagem em `processed_mids`. Se já existir, a consulta não devolve o ID e o nó If manda a mensagem para **Ignorar (mensagem repetida)** |
 | 6 | Abrir sessão | Cria ou atualiza a sessão do cliente e informa se o bot está pausado |
 | 7 | Bot pausado? | Se um atendente assumiu, **Ignorar** |
 | 8 | Tem sessão Typebot? | Sem sessão: `startChat`. Com sessão: `continueChat` (se der "Session not found", reinicia com `startChat`) |
@@ -76,3 +76,9 @@ Outros workflows: `01-verificacao-webhook` (responde ao desafio GET da Meta) e `
 - Segredos só em `infra/.env` (fora do Git); tokens em credenciais criptografadas do n8n.
 - IDs reais apenas em `sessions`; as métricas usam hash com sal.
 - O texto digitado pelo cliente não é armazenado nas métricas.
+
+## Tratamento de erros
+
+Os workflows 01, 02 e 04 usam o **99-erros** como fluxo de erro. Quando um nó falha, o n8n chama o 99-erros. Ele envia ao Telegram o nome do workflow, o nó que falhou, a mensagem de erro e o número da execução.
+
+Exemplo: com o Typebot desligado, o nó **Typebot startChat** falha com "The service refused the connection", e o aviso chega ao Telegram. Ao religar o Typebot, o robô volta a responder sem outra ação.

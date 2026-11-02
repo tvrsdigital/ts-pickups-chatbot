@@ -57,7 +57,7 @@ Você pode solicitar confirmação do tratamento, acesso, correção, anonimiza�
 Para pedir a exclusão dos dados associados à sua conta do Instagram, use uma destas opções:
 
 - no atendimento do @ts_pickups, escolha **Falar com atendente** e diga que deseja excluir seus dados; ou
-- escreva para [E-MAIL DE CONTATO] informando seu @ do Instagram.
+- escreva para tvrs.digital54@gmail.com informando seu @ do Instagram.
 
 Atenderemos o pedido em até 15 dias.
 

@@ -59,7 +59,7 @@ flowchart LR
    ```
 
 3. No Typebot, importe `flow/typebot-export.json`, publique e anote o *Public ID* em `TYPEBOT_PUBLIC_ID`.
-4. No n8n (`http://localhost:5678`), importe os workflows de `n8n/workflows/`, crie as credenciais `bot-db` (Postgres), `ig-token` (Header Auth com `Authorization: Bearer <token>`) e `telegram-avisos`, e publique os workflows.
+4. No n8n (`http://localhost:5678`), importe os workflows de `n8n/workflows/`, crie as credenciais `bot-db` (Postgres), `ig-token` (Header Auth com `Authorization: Bearer <token>`) e `telegram-avisos`, e publique os workflows. Em cada workflow, em **Settings**, escolha o **99-erros** como Error Workflow.
 5. Na Meta, cadastre o webhook `https://<seu-dominio-ngrok>/webhook/ig` com o token de verificação do `.env` e assine o campo `messages`.
 
 Nunca use `docker compose down -v`: o `-v` apaga os volumes, inclusive o do n8n.
@@ -74,15 +74,17 @@ Todos rodam na raiz do projeto.
 | `node tests/check-labels.js` | Garante que todo botão tem até 20 caracteres (limite do Instagram) |
 | `node tests/simulate-typebot.js` | Percorre os 28 caminhos na API do Typebot e confere link, nome do produto e desfecho |
 | `node tests/simulate-n8n.js` | Envia webhooks assinados ao n8n (com `DRY_RUN=true`) e confere os eventos no banco |
+| `node tests/concurrency-n8n.js` | Envia 20 pessoas ao mesmo tempo e 5 cópias da mesma mensagem (exige `DRY_RUN=true`); confere 1 evento por pessoa e por mensagem |
 
 Resultados guardados em `tests/resultado-typebot.txt` e `tests/resultado-n8n.txt`.
 
 ## Resultados
 
 - **28 de 28 caminhos** aprovados no Typebot e pelo n8n.
-- Processamento interno (modo simulado, 131 mensagens): média de **49 ms**, p95 de **63 ms**, máximo de **206 ms**.
-- Com envio real ao Instagram, em testes manuais: cerca de **1 a 2 segundos** por mensagem.
-- Os testes encontraram problemas reais do fluxo antes da publicação: um botão ausente no menu de baixos e um erro de digitação em duas recomendações.
+- Processamento interno (modo simulado, 131 mensagens): média de **49 ms**, p95 de **55 ms**, máximo de **182 ms**.
+- Com envio real ao Instagram (79 mensagens de 6 contas): média de **1,3 s**, mediana de 1,2 s, p95 de 1,7 s e máximo de 2,9 s.
+- Os testes encontraram quatro problemas reais: um botão ausente no menu de baixos, um erro de digitação em duas recomendações, rótulos de botão acima do limite do Instagram e mensagens repetidas processadas em paralelo (corrigido com o nó **Mensagem nova?**).
+- Robustez: figurinha, imagem, áudio e texto livre (testes manuais, em duas contas); Typebot fora do ar, com aviso no Telegram pelo workflow 99-erros; 20 pessoas ao mesmo tempo e 5 cópias da mesma mensagem (`tests/concurrency-n8n.js`).
 
 ## Estrutura do repositório
 
@@ -108,8 +110,7 @@ O robô guarda o identificador do Instagram apenas na tabela de sessões (apagad
 
 ## Trabalho futuro
 
-- Testes de robustez (anexos, queda do Typebot, mensagens simultâneas).
-- Workflow de aviso de erros.
+- Testes de robustez automáticos e de carga maior (inclui queda do banco de dados).
 - Hospedagem 24 horas gratuita.
 
 ## Licença
