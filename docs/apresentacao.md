@@ -2,7 +2,7 @@
 
 O fluxo de conversa e os workflows do robô da **TS PickUps**
 
-[Karen, Noah, Paula, Rafael e Ramon] · [Fundamentos de Sistemas de Informação] · Novembro de 2026
+Karen, Noah, Paula, Rafael e Ramon · Fundamentos de Sistemas de Informação · Novembro de 2026
 
 ---
 
