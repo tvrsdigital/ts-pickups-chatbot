@@ -1,0 +1,113 @@
+{
+  "updatedAt": "2026-11-02T03:05:51.248Z",
+  "createdAt": "2026-11-02T03:03:27.871Z",
+  "id": "F2ZeJdwU5NHVEbCR",
+  "name": "04 - retencao",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "764e3d1e-f927-4f33-8669-f323168e98a8",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH s AS (DELETE FROM sessions WHERE updated_at < now() - interval '30 days' RETURNING 1),\n     m AS (DELETE FROM processed_mids WHERE ts < now() - interval '7 days' RETURNING 1),\n     e AS (DELETE FROM events WHERE ts < now() - interval '12 months' RETURNING 1)\nSELECT (SELECT count(*) FROM s) AS sessoes_apagadas,\n       (SELECT count(*) FROM m) AS mids_apagados,\n       (SELECT count(*) FROM e) AS eventos_apagados;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        208,
+        0
+      ],
+      "id": "b982156b-d601-42c9-be52-94fb4be9f1b0",
+      "name": "Apagar dados antigos",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Apagar dados antigos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "a35d895c-b01d-4312-b1a2-3dd8403d30ab",
+  "activeVersionId": "67ac16a8-40f5-4051-ba03-ca8cb3ad4d1d",
+  "versionCounter": 9,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-02T03:03:27.874Z",
+      "createdAt": "2026-11-02T03:03:27.874Z",
+      "role": "workflow:owner",
+      "workflowId": "F2ZeJdwU5NHVEbCR",
+      "projectId": "FjAFfRwXytDDKSmo",
+      "project": {
+        "updatedAt": "2026-11-01T18:20:02.787Z",
+        "createdAt": "2026-11-01T18:08:05.868Z",
+        "id": "FjAFfRwXytDDKSmo",
+        "name": "Tavares Bastos <tvrs.digital54@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "defd4eb6-25c8-4f48-9c3c-82e5c3313e73"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
