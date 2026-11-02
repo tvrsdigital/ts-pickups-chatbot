@@ -64,6 +64,8 @@ flowchart LR
 
 Nunca use `docker compose down -v`: o `-v` apaga os volumes, inclusive o do n8n.
 
+Para ligar, desligar e resolver erros no dia a dia, veja o [guia de operação](docs/operacao.md).
+
 ## Testes
 
 Todos rodam na raiz do projeto.
