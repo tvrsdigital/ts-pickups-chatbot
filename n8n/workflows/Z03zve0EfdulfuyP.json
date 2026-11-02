@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T01:37:53.883Z",
+  "updatedAt": "2026-11-02T02:17:22.111Z",
   "createdAt": "2026-11-01T23:26:40.723Z",
   "id": "Z03zve0EfdulfuyP",
   "name": "02-mensagens",
@@ -88,7 +88,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const conta = $env.IG_ACCOUNT_ID;\nconst body = $input.first().json.body;\nconst eventos = [];\n\nfor (const entry of body.entry || []) {\n  const lista = [];\n  for (const m of entry.messaging || []) lista.push(m);                 // formato de DMs reais\n  for (const c of entry.changes || []) {                               // formato do botão Teste\n    if (c.field === 'messages') lista.push(c.value);\n  }\n\n  for (const e of lista) {\n    const msg = e.message;\n    if (!msg || !e.sender) continue;                                   // ignora leituras, reações etc.\n    if (msg.is_echo || e.sender.id === conta) continue;                // ignora eco das nossas respostas\n\n    eventos.push({\n      json: {\n        igsid: e.sender.id,\n        mid: msg.mid,\n        texto: msg.text || '',\n        payload: msg.quick_reply ? msg.quick_reply.payload : null,\n        anexos: (msg.attachments || []).length,\n        timestamp: e.timestamp,\n      },\n    });\n  }\n}\n\nreturn eventos;"
+        "jsCode": "const conta = $env.IG_ACCOUNT_ID;\nconst body = $input.first().json.body;\nconst eventos = [];\n\nfor (const entry of body.entry || []) {\n  const lista = [];\n  for (const m of entry.messaging || []) lista.push(m);                 // formato de DMs reais\n  for (const c of entry.changes || []) {                               // formato do botão Teste\n    if (c.field === 'messages') lista.push(c.value);\n  }\n\n  for (const e of lista) {\n    const msg = e.message;\n    if (!msg || !e.sender) continue;                                   // ignora leituras, reações etc.\n    if (msg.is_echo || e.sender.id === conta) continue;                // ignora eco das nossas respostas\n\n    eventos.push({\n      json: {\n        igsid: e.sender.id,\n        mid: msg.mid,\n        texto: msg.text || '',\n        payload: msg.quick_reply ? msg.quick_reply.payload : null,\n        anexos: (msg.attachments || []).length,\n        timestamp: e.timestamp,\n        t0: Date.now(),\n      },\n    });\n  }\n}\n\nreturn eventos;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -453,7 +453,7 @@
           "conditions": [
             {
               "id": "156e77d5-df91-413e-8815-5b0aeca02a99",
-              "leftValue": "={{ $('Preparar envios').item.json.handoff }}",
+              "leftValue": "={{ $('Preparar envios').item.json.handoff && $env.DRY_RUN !== 'true' }}",
               "rightValue": "",
               "operator": {
                 "type": "boolean",
@@ -497,6 +497,42 @@
         "telegramApi": {
           "id": "sfdvuK67fm223i82",
           "name": "telegram-avisos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst ev = $('Extrair eventos').first().json;\nconst resp = $('Preparar envios').first().json;\n\n// identificador anonimizado: nunca gravamos o ID real em events\nconst user_hash = crypto\n  .createHash('sha256')\n  .update(ev.igsid + $env.HASH_SALT)\n  .digest('hex');\n\nlet event = 'message';              // texto livre\nif (resp.handoff) event = 'handoff';\nelse if (resp.fim) event = 'end';\nelse if (ev.payload) event = 'choice';\n\nreturn [{\n  json: {\n    user_hash,\n    event,\n    detail: ev.payload || '',       // só o rótulo do botão; o texto digitado NÃO é guardado\n    latency_ms: Date.now() - ev.t0,\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3168,
+        352
+      ],
+      "id": "fd60608d-d3b0-407d-8881-4bbb46f72c7d",
+      "name": "Calcular métricas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO events (user_hash, event, detail, latency_ms)\nVALUES ($1, $2, $3, $4);",
+        "options": {
+          "queryReplacement": "={{ [$json.user_hash, $json.event, $json.detail, $json.latency_ms] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        3392,
+        352
+      ],
+      "id": "1e32b0d2-7bc1-41ff-84aa-e05de2a45440",
+      "name": "Registrar evento",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
         }
       }
     }
@@ -692,6 +728,11 @@
             "node": "Encerrar ou Pausar",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Calcular métricas",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -701,6 +742,11 @@
         [
           {
             "node": "Encerrar ou Pausar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Calcular métricas",
             "type": "main",
             "index": 0
           }
@@ -739,6 +785,17 @@
           }
         ]
       ]
+    },
+    "Calcular métricas": {
+      "main": [
+        [
+          {
+            "node": "Registrar evento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -751,9 +808,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "b433bdd2-3d08-43fe-b9e6-f6bf5f63fdc9",
-  "activeVersionId": "b433bdd2-3d08-43fe-b9e6-f6bf5f63fdc9",
-  "versionCounter": 127,
+  "versionId": "8d61ae5e-ff28-45a3-bbca-c9148bd28749",
+  "activeVersionId": "8d61ae5e-ff28-45a3-bbca-c9148bd28749",
+  "versionCounter": 139,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -778,7 +835,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version b433bdd2",
+    "name": "Version 8d61ae5e",
     "description": ""
   }
 }

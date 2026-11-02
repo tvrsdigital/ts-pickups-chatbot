@@ -18,8 +18,8 @@
     "MENU": {
       "text": "Olá! Eu sou o assistente virtual da TS PickUps. Como posso ajudar?",
       "options": [
-        { "label": "Captadores guitarra", "next": "GUITARRA" },
-        { "label": "Captadores de baixo", "next": "BAIXO" },
+        { "label": "Captador de guitarra", "next": "GUITARRA" },
+        { "label": "Captador de baixo", "next": "BAIXO" },
         { "label": "Falar com atendente", "next": "ATENDENTE" }
       ]
     },
@@ -35,7 +35,7 @@
       "text": "Qual sua preferência musical?",
       "options": [
         { "label": "Música popular", "next": "REC_VERSUS" },
-        { "label": "Pop rock", "next": "REC_OUTSIDE" },
+        { "label": "Pop Rock", "next": "REC_OUTSIDE" },
         { "label": "Metal", "next": "REC_DIAMOND" }
       ]
     },
@@ -77,7 +77,7 @@
       "text": "Entre no site para ouvir as tracks do captador indicado: {{url}}",
       "options": [
         { "label": "Falar com atendente", "next": "ATENDENTE" },
-        { "label": "Quero comprar", "next": "ATENDENTE" },
+        { "label": "Comprar", "next": "ATENDENTE" },
         { "label": "Finalizar conversa", "next": "FIM" }
       ]
     },

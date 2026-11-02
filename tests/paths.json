@@ -2,7 +2,7 @@
   {
     "id": 1,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Single",
       "Falar com atendente"
     ],
@@ -19,9 +19,9 @@
   {
     "id": 2,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Single",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "ST",
@@ -36,7 +36,7 @@
   {
     "id": 3,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Single",
       "Finalizar conversa"
     ],
@@ -53,7 +53,7 @@
   {
     "id": 4,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Música popular",
       "Falar com atendente"
@@ -72,10 +72,10 @@
   {
     "id": 5,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Música popular",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "VERSUS",
@@ -91,7 +91,7 @@
   {
     "id": 6,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Música popular",
       "Finalizar conversa"
@@ -110,9 +110,9 @@
   {
     "id": 7,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
-      "Pop rock",
+      "Pop Rock",
       "Falar com atendente"
     ],
     "terminal": "HANDOFF",
@@ -129,10 +129,10 @@
   {
     "id": 8,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
-      "Pop rock",
-      "Quero comprar"
+      "Pop Rock",
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "OUTSIDE",
@@ -148,9 +148,9 @@
   {
     "id": 9,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
-      "Pop rock",
+      "Pop Rock",
       "Finalizar conversa"
     ],
     "terminal": "END",
@@ -167,7 +167,7 @@
   {
     "id": 10,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Metal",
       "Falar com atendente"
@@ -186,10 +186,10 @@
   {
     "id": 11,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Metal",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "DIAMOND",
@@ -205,7 +205,7 @@
   {
     "id": 12,
     "clicks": [
-      "Captadores guitarra",
+      "Captador de guitarra",
       "Humbucker",
       "Metal",
       "Finalizar conversa"
@@ -224,7 +224,7 @@
   {
     "id": 13,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som pesado e potente",
       "Falar com atendente"
@@ -243,10 +243,10 @@
   {
     "id": 14,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som pesado e potente",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "PUC",
@@ -262,7 +262,7 @@
   {
     "id": 15,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som pesado e potente",
       "Finalizar conversa"
@@ -281,7 +281,7 @@
   {
     "id": 16,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som mais tradicional",
       "Falar com atendente"
@@ -300,10 +300,10 @@
   {
     "id": 17,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som mais tradicional",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "PSAM",
@@ -319,7 +319,7 @@
   {
     "id": 18,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Precision",
       "Som mais tradicional",
       "Finalizar conversa"
@@ -338,7 +338,7 @@
   {
     "id": 19,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 4 cordas",
       "Falar com atendente"
@@ -357,10 +357,10 @@
   {
     "id": 20,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 4 cordas",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "BSL4",
@@ -376,7 +376,7 @@
   {
     "id": 21,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 4 cordas",
       "Finalizar conversa"
@@ -395,7 +395,7 @@
   {
     "id": 22,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 5 cordas",
       "Falar com atendente"
@@ -414,10 +414,10 @@
   {
     "id": 23,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 5 cordas",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "BSL5",
@@ -433,7 +433,7 @@
   {
     "id": 24,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Bass",
       "Baixo de 5 cordas",
       "Finalizar conversa"
@@ -452,7 +452,7 @@
   {
     "id": 25,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Precision",
       "Falar com atendente"
     ],
@@ -469,9 +469,9 @@
   {
     "id": 26,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Precision",
-      "Quero comprar"
+      "Comprar"
     ],
     "terminal": "HANDOFF",
     "produto": "PJ",
@@ -486,7 +486,7 @@
   {
     "id": 27,
     "clicks": [
-      "Captadores de baixo",
+      "Captador de baixo",
       "Jazz Precision",
       "Finalizar conversa"
     ],
