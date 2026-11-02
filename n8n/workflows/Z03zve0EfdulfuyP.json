@@ -1,0 +1,784 @@
+{
+  "updatedAt": "2026-11-02T01:37:53.883Z",
+  "createdAt": "2026-11-01T23:26:40.723Z",
+  "id": "Z03zve0EfdulfuyP",
+  "name": "02-mensagens",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "420d6844-e67d-451a-aeed-15779d6e1d25",
+              "leftValue": "={{ $json.assinatura_valida }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "dc6a4bf9-3b14-465a-bc1e-857fab7d7ede",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        672,
+        96
+      ],
+      "id": "76cdf35c-1203-4579-b10f-c7e975f4e659",
+      "name": "Descartar (assinatura inválida)"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ig",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f95d4fc9-57a9-4d0f-9780-ed2bb512b50b",
+      "name": "Receber POST",
+      "webhookId": "2e0f2dcd-2520-4cf8-95b4-88908e0bec20"
+    },
+    {
+      "parameters": {
+        "jsCode": "const crypto = require('crypto');\n\nconst item = $input.first();\nconst recebida = item.json.headers['x-hub-signature-256'] || '';\nconst raw = await this.helpers.getBinaryDataBuffer(0, 'data');\n\nconst calculada = 'sha256=' + crypto\n  .createHmac('sha256', $env.IG_APP_SECRET)\n  .update(raw)\n  .digest('hex');\n\n// comparação em tempo constante (evita ataques de temporização)\nconst a = Buffer.from(recebida);\nconst b = Buffer.from(calculada);\nconst valida = a.length === b.length && crypto.timingSafeEqual(a, b);\n\nreturn [{\n  json: {\n    assinatura_valida: valida,\n    body: JSON.parse(raw.toString('utf8')),\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "e5a1e6e9-8d64-4497-a14e-22a9586d1b53",
+      "name": "Validar Assinatura",
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const conta = $env.IG_ACCOUNT_ID;\nconst body = $input.first().json.body;\nconst eventos = [];\n\nfor (const entry of body.entry || []) {\n  const lista = [];\n  for (const m of entry.messaging || []) lista.push(m);                 // formato de DMs reais\n  for (const c of entry.changes || []) {                               // formato do botão Teste\n    if (c.field === 'messages') lista.push(c.value);\n  }\n\n  for (const e of lista) {\n    const msg = e.message;\n    if (!msg || !e.sender) continue;                                   // ignora leituras, reações etc.\n    if (msg.is_echo || e.sender.id === conta) continue;                // ignora eco das nossas respostas\n\n    eventos.push({\n      json: {\n        igsid: e.sender.id,\n        mid: msg.mid,\n        texto: msg.text || '',\n        payload: msg.quick_reply ? msg.quick_reply.payload : null,\n        anexos: (msg.attachments || []).length,\n        timestamp: e.timestamp,\n      },\n    });\n  }\n}\n\nreturn eventos;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "1fc382aa-ca22-4bfa-9f1a-22b5101aa96e",
+      "name": "Extrair eventos"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO processed_mids (mid) VALUES ($1)\nON CONFLICT (mid) DO NOTHING\nRETURNING mid;",
+        "options": {
+          "queryReplacement": "={{ $json.mid }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "2cd516e7-7843-40e9-80f4-033eecab7dbf",
+      "name": "Deduplicar mid",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO sessions (igsid) VALUES ($1)\nON CONFLICT (igsid) DO UPDATE SET updated_at = now()\nRETURNING typebot_session,\n          (handoff_until IS NOT NULL AND handoff_until > now()) AS em_handoff;",
+        "options": {
+          "queryReplacement": "={{ $('Extrair eventos').item.json.igsid }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "13d18d4a-63e5-40a5-b925-84613da0d461",
+      "name": "Abrir sessão",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "6fa03352-c7d2-40c1-9a09-ffd6ae24cfc8",
+              "leftValue": "={{ $json.em_handoff }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1344,
+        -96
+      ],
+      "id": "11d95dc0-e04d-49d1-9d9e-29c6022136ad",
+      "name": "Bot pausado?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        -192
+      ],
+      "id": "9b97721e-e6c0-4825-ba5f-f9bee548e62d",
+      "name": "Ignorar (atendente assumiu)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "8268e99f-075b-46b4-a61e-4b45bb44b340",
+              "leftValue": "={{ $json.typebot_session }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1568,
+        0
+      ],
+      "id": "fdf2b25b-25bc-41db-8aa7-c16b4ec9e2d8",
+      "name": "Tem sessão Typebot?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TYPEBOT_URL }}/api/v1/typebots/{{ $env.TYPEBOT_PUBLIC_ID }}/startChat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1792,
+        -96
+      ],
+      "id": "822eb5ec-59ab-4797-95a6-0d92c05f1bf4",
+      "name": "Typebot startChat"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE sessions\nSET typebot_session = $1, updated_at = now()\nWHERE igsid = $2;",
+        "options": {
+          "queryReplacement": "={{ $json.sessionId }},{{ $('Extrair eventos').item.json.igsid }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        2032,
+        -256
+      ],
+      "id": "c2c088f0-bb07-4e18-9b12-22b8563743df",
+      "name": "Salvar sessão",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TYPEBOT_URL }}/api/v1/sessions/{{ $('Abrir sessão').item.json.typebot_session }}/continueChat",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"message\": {{ JSON.stringify($('Extrair eventos').item.json.payload || $('Extrair eventos').item.json.texto) }} }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1792,
+        96
+      ],
+      "id": "df620fd7-fdf9-4638-a231-11e0693e05a1",
+      "name": "Typebot continueChat",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const ev = $('Extrair eventos').item.json;\nconst r = $json;\n\nconst INVALIDO = 'Invalid message. Please, try again.';\nconst MSG_INVALIDO = 'Não entendi. Por favor, toque em um dos botões abaixo.';\n\n// richText do Typebot: blocos com filhos; extrai só o texto\nconst textoDe = (nos) => (nos || [])\n  .map((n) => (n.text !== undefined ? n.text : textoDe(n.children)))\n  .join('');\nconst paragrafos = (rich) => (rich || []).map((b) => textoDe(b.children)).join('\\n');\n\nlet textos = [];\nfor (const m of r.messages || []) {\n  if (m.type === 'text' && m.content && m.content.richText) {\n    let t = paragrafos(m.content.richText).trim();\n    if (t === INVALIDO) t = MSG_INVALIDO;\n    if (t) textos.push(t);\n  }\n}\n\nlet handoff = false;\nlet fim = false;\ntextos = textos\n  .map((t) => {\n    if (t.includes('[[HANDOFF]]')) handoff = true;\n    if (t.includes('[[END]]')) fim = true;\n    return t.replace('[[HANDOFF]]', '').replace('[[END]]', '').trim();\n  })\n  .filter(Boolean);\n\nconst botoes = r.input && r.input.type === 'choice input'\n  ? r.input.items.map((i) => i.content).slice(0, 13)\n  : [];\n\nreturn { json: { igsid: ev.igsid, textos, botoes, handoff, fim } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        0
+      ],
+      "id": "725a8d8b-4477-4a1d-b7c0-28f0928efc36",
+      "name": "Montar Resposta"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saida = [];\n\nfor (const item of $input.all()) {\n  const { igsid, textos, botoes, handoff, fim } = item.json;\n  const truncados = botoes.filter((b) => b.length > 20);\n\n  textos.forEach((texto, i) => {\n    const ultima = i === textos.length - 1;\n    const message = { text: texto };\n\n    // Botões (resposta rápida) só vão na última mensagem. Limite do título: 20 caracteres.\n    // O payload leva o rótulo completo: é ele que devolvemos ao Typebot.\n    if (ultima && botoes.length) {\n      message.quick_replies = botoes.map((b) => ({\n        content_type: 'text',\n        title: b.slice(0, 20),\n        payload: b,\n      }));\n    }\n\n    saida.push({\n      json: {\n        igsid,\n        ordem: i,\n        handoff,\n        fim,\n        titulos_truncados: truncados,\n        body: { recipient: { id: igsid }, message },\n      },\n    });\n  });\n}\n\nreturn saida;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        0
+      ],
+      "id": "c81ba2ed-cfba-440d-bc3e-a3ead8d0d32c",
+      "name": "Preparar envios"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "e65f3534-9b62-4cae-b3cf-c18cd1167377",
+              "leftValue": "={{ $env.DRY_RUN }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        2576,
+        0
+      ],
+      "id": "e44e31c1-7a97-426c-ad64-958541071e98",
+      "name": "Modo Simulado?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        -96
+      ],
+      "id": "1426f551-fc59-4718-9204-18ff73f49064",
+      "name": "Simulado (DRY_RUN)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/{{ $env.GRAPH_VERSION }}/{{ $env.IG_ACCOUNT_ID }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2800,
+        96
+      ],
+      "id": "d2e1acd3-cc14-48e0-86d5-16863c277c92",
+      "name": "Enviar ao Instagram",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DbkdneWcowXSAHGG",
+          "name": "ig-token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "2d74c9ec-3e80-4dfc-8734-a67c9d83600c",
+              "leftValue": "={{ $('Preparar envios').item.json.fim || $('Preparar envios').item.json.handoff }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3152,
+        -16
+      ],
+      "id": "468c1309-f357-4c2b-9c06-102000261d4a",
+      "name": "Encerrar ou Pausar"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE sessions\nSET typebot_session = NULL,\n    handoff_until = CASE WHEN $2::boolean THEN now() + interval '24 hours' ELSE handoff_until END,\n    updated_at = now()\nWHERE igsid = $1;",
+        "options": {
+          "queryReplacement": "={{ $('Preparar envios').item.json.igsid }},{{ $('Preparar envios').item.json.handoff }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        3376,
+        -112
+      ],
+      "id": "d726b52a-ad71-4c7d-8f27-fb6d58b031bc",
+      "name": "Atualizar sessão",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "156e77d5-df91-413e-8815-5b0aeca02a99",
+              "leftValue": "={{ $('Preparar envios').item.json.handoff }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3600,
+        -112
+      ],
+      "id": "d43b1a4d-4ae1-4ca1-bca4-5a2fa85e0573",
+      "name": "É handoff?"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "🔔 Cliente pediu atendimento no Instagram (@ts_pickups). Abra as mensagens e responda o quanto antes: https://www.instagram.com/direct/inbox/ O bot ficará em silêncio nesta conversa por 24 horas.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3824,
+        -208
+      ],
+      "id": "894c6a70-a6b0-4eb5-9caa-84799eec5a4c",
+      "name": "Avisar atendente",
+      "webhookId": "d55f0085-9975-4283-86f8-87aab052a8aa",
+      "credentials": {
+        "telegramApi": {
+          "id": "sfdvuK67fm223i82",
+          "name": "telegram-avisos"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extrair eventos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Descartar (assinatura inválida)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receber POST": {
+      "main": [
+        [
+          {
+            "node": "Validar Assinatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Assinatura": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair eventos": {
+      "main": [
+        [
+          {
+            "node": "Deduplicar mid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deduplicar mid": {
+      "main": [
+        [
+          {
+            "node": "Abrir sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Abrir sessão": {
+      "main": [
+        [
+          {
+            "node": "Bot pausado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bot pausado?": {
+      "main": [
+        [
+          {
+            "node": "Ignorar (atendente assumiu)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Tem sessão Typebot?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem sessão Typebot?": {
+      "main": [
+        [
+          {
+            "node": "Typebot startChat",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Typebot continueChat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Typebot startChat": {
+      "main": [
+        [
+          {
+            "node": "Salvar sessão",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Montar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Typebot continueChat": {
+      "main": [
+        [
+          {
+            "node": "Montar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Typebot startChat",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Resposta": {
+      "main": [
+        [
+          {
+            "node": "Preparar envios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar envios": {
+      "main": [
+        [
+          {
+            "node": "Modo Simulado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Modo Simulado?": {
+      "main": [
+        [
+          {
+            "node": "Simulado (DRY_RUN)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar ao Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simulado (DRY_RUN)": {
+      "main": [
+        [
+          {
+            "node": "Encerrar ou Pausar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar ao Instagram": {
+      "main": [
+        [
+          {
+            "node": "Encerrar ou Pausar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encerrar ou Pausar": {
+      "main": [
+        [
+          {
+            "node": "Atualizar sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar sessão": {
+      "main": [
+        [
+          {
+            "node": "É handoff?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "É handoff?": {
+      "main": [
+        [
+          {
+            "node": "Avisar atendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "b433bdd2-3d08-43fe-b9e6-f6bf5f63fdc9",
+  "activeVersionId": "b433bdd2-3d08-43fe-b9e6-f6bf5f63fdc9",
+  "versionCounter": 127,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-01T23:26:40.724Z",
+      "createdAt": "2026-11-01T23:26:40.724Z",
+      "role": "workflow:owner",
+      "workflowId": "Z03zve0EfdulfuyP",
+      "projectId": "FjAFfRwXytDDKSmo",
+      "project": {
+        "updatedAt": "2026-11-01T18:20:02.787Z",
+        "createdAt": "2026-11-01T18:08:05.868Z",
+        "id": "FjAFfRwXytDDKSmo",
+        "name": "Tavares Bastos <tvrs.digital54@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "defd4eb6-25c8-4f48-9c3c-82e5c3313e73"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version b433bdd2",
+    "description": ""
+  }
+}

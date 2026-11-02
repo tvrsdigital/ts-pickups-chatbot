@@ -1,0 +1,95 @@
+{
+  "updatedAt": "2026-11-01T23:18:14.085Z",
+  "createdAt": "2026-11-01T23:13:34.920Z",
+  "id": "H3EapVZGdz8zRb8o",
+  "name": "01-verificacao-webhook",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ig",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e1779d51-b7cf-47da-b8be-84ce9b0976f7",
+      "name": "Webhook",
+      "webhookId": "a113567c-2548-46fd-8364-e9064e7b628b"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.verify_token'] === $env.IG_VERIFY_TOKEN ? $json.query['hub.challenge'] : 'forbidden' }}",
+        "options": {
+          "responseCode": "={{ $json.query['hub.verify_token'] === $env.IG_VERIFY_TOKEN ? 200 : 403 }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "43565a6e-ff60-4fbf-a5e9-9acaac5317ad",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "08dfab91-2f83-467d-9362-16d155cde947",
+  "activeVersionId": "08dfab91-2f83-467d-9362-16d155cde947",
+  "versionCounter": 10,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-01T23:13:34.923Z",
+      "createdAt": "2026-11-01T23:13:34.923Z",
+      "role": "workflow:owner",
+      "workflowId": "H3EapVZGdz8zRb8o",
+      "projectId": "FjAFfRwXytDDKSmo",
+      "project": {
+        "updatedAt": "2026-11-01T18:20:02.787Z",
+        "createdAt": "2026-11-01T18:08:05.868Z",
+        "id": "FjAFfRwXytDDKSmo",
+        "name": "Tavares Bastos <tvrs.digital54@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "defd4eb6-25c8-4f48-9c3c-82e5c3313e73"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 08dfab91",
+    "description": "v1 - verificação GET "
+  }
+}

@@ -47,6 +47,7 @@ services:
       TYPEBOT_URL: ${TYPEBOT_URL}
       TYPEBOT_PUBLIC_ID: ${TYPEBOT_PUBLIC_ID}
       DRY_RUN: ${DRY_RUN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
     volumes:
       - n8ndata:/home/node/.n8n
       - ../n8n/workflows:/exports
