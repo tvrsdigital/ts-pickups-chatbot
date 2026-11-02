@@ -1,4 +1,5 @@
 # TS PickUps Chatbot
+[![CI](https://github.com/tvrsdigital/ts-pickups-chatbot/actions/workflows/ci.yml/badge.svg)](https://github.com/tvrsdigital/ts-pickups-chatbot/actions/workflows/ci.yml)
 
 Assistente virtual para atendimento no **Instagram Direct** de um pequeno negócio (fabricação artesanal de captadores para guitarra e baixo). O robô conduz o cliente por perguntas simples até recomendar o captador ideal e, quando o cliente quiser, passa a conversa a um atendente humano.
 
