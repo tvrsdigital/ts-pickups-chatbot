@@ -1,0 +1,78 @@
+# Arquitetura
+
+## Fluxo de conversa (28 caminhos)
+
+```mermaid
+flowchart TD
+  MENU["Menu: Olá! Como posso ajudar?"] -->|Captador de guitarra| GUI[Qual modelo?]
+  MENU -->|Captador de baixo| BAI[Qual modelo?]
+  MENU -->|Falar com atendente| ATE[[Atendente humano]]
+
+  GUI -->|Single| ST[Recomenda ST]
+  GUI -->|Humbucker| EST[Qual estilo?]
+  EST -->|Música popular| VERSUS[Recomenda VERSUS]
+  EST -->|Pop Rock| OUTSIDE[Recomenda OutSide]
+  EST -->|Metal| DIAMOND[Recomenda Diamond]
+
+  BAI -->|Precision| PRE[Qual som?]
+  BAI -->|Jazz Bass| JB[Quantas cordas?]
+  BAI -->|Jazz Precision| PJ[Recomenda PJ]
+  PRE -->|Som pesado e potente| PUC[Recomenda PUC]
+  PRE -->|Som mais tradicional| PSAM[Recomenda PSAM]
+  JB -->|Baixo de 4 cordas| BSL4[Recomenda BSL4]
+  JB -->|Baixo de 5 cordas| BSL5[Recomenda BSL5]
+
+  ST --> SITE
+  VERSUS --> SITE
+  OUTSIDE --> SITE
+  DIAMOND --> SITE
+  PJ --> SITE
+  PUC --> SITE
+  PSAM --> SITE
+  BSL4 --> SITE
+  BSL5 --> SITE
+
+  SITE["Link do site + opções"] -->|Falar com atendente| ATE
+  SITE -->|Comprar| ATE
+  SITE -->|Finalizar conversa| FIM[[Fim da conversa]]
+```
+
+Todas as nove recomendações levam ao mesmo bloco final (link do site) e, de lá, ao atendente ou ao fim. Total: **28 caminhos ponta a ponta** (19 terminam em atendente e 9 em fim de conversa).
+
+## Pipeline do n8n (workflow `02-mensagens`)
+
+| # | Nó | Função |
+|---|---|---|
+| 1 | Receber POST | Recebe o webhook da Meta e responde 200 imediatamente, guardando o corpo bruto |
+| 2 | Validar Assinatura | Recalcula o HMAC-SHA256 com o App Secret e compara em tempo constante |
+| 3 | If | Assinatura inválida vai para **Descartar** |
+| 4 | Extrair eventos | Gera um item por mensagem (formatos `messaging` e `changes`), ignora ecos e marca a hora de chegada |
+| 5 | Deduplicar mid | Insere o ID da mensagem em `processed_mids`; se já existir, o fluxo para |
+| 6 | Abrir sessão | Cria ou atualiza a sessão do cliente e informa se o bot está pausado |
+| 7 | Bot pausado? | Se um atendente assumiu, **Ignorar** |
+| 8 | Tem sessão Typebot? | Sem sessão: `startChat`. Com sessão: `continueChat` (se der "Session not found", reinicia com `startChat`) |
+| 9 | Salvar sessão | Ramo paralelo que grava o `sessionId` do Typebot |
+| 10 | Montar Resposta | Converte o texto do Typebot, extrai os botões, retira os marcadores `[[HANDOFF]]`/`[[END]]` e traduz o aviso de opção inválida |
+| 11 | Preparar envios | Monta o JSON do Instagram (um envio por texto; botões como respostas rápidas de até 20 caracteres, só na última mensagem) |
+| 12 | Modo Simulado? | `DRY_RUN=true` não envia nada; `false` chama **Enviar ao Instagram** |
+| 13 | Calcular métricas / Registrar evento | Grava evento anonimizado (hash, tipo, botão e latência) |
+| 14 | Encerrar ou Pausar? | No fim da conversa limpa a sessão; no atendimento também pausa o bot por 24 h |
+| 15 | É handoff? / Avisar atendente | Envia aviso ao Telegram (somente fora do modo simulado) |
+
+Outros workflows: `01-verificacao-webhook` (responde ao desafio GET da Meta) e `04-retencao` (apaga dados antigos todo dia às 3h).
+
+## Banco de dados
+
+| Tabela | Conteúdo | Retenção |
+|---|---|---|
+| `sessions` | ID do Instagram, sessão do Typebot e pausa do atendimento | 30 dias sem atividade |
+| `processed_mids` | IDs de mensagens já processadas | 7 dias |
+| `events` | Estatísticas anonimizadas (hash, tipo, botão e latência) | 12 meses |
+| `config` | Reservada para configurações | — |
+
+## Segurança
+
+- Assinatura de cada webhook validada com o App Secret.
+- Segredos só em `infra/.env` (fora do Git); tokens em credenciais criptografadas do n8n.
+- IDs reais apenas em `sessions`; as métricas usam hash com sal.
+- O texto digitado pelo cliente não é armazenado nas métricas.
