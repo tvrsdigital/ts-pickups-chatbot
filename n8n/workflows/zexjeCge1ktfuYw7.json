@@ -1,0 +1,99 @@
+{
+  "updatedAt": "2026-11-02T20:47:36.594Z",
+  "createdAt": "2026-11-02T20:43:32.028Z",
+  "id": "zexjeCge1ktfuYw7",
+  "name": "99-erros",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d26b008a-766a-4f5e-8261-5b521c0e1212",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=🚨 <b>Erro no robô TS PickUps</b> \nWorkflow: {{ $json.workflow.name }} \nNó que falhou: {{ $json.execution.lastNodeExecuted }} \nErro: {{ String($json.execution.error.message).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }}\nExecução nº {{ $json.execution.id }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "bfec99f7-4965-4a16-bdd6-20d007de3173",
+      "name": "Send a text message",
+      "webhookId": "252e82b0-3b03-4954-be6c-408630e4553f",
+      "credentials": {
+        "telegramApi": {
+          "id": "sfdvuK67fm223i82",
+          "name": "telegram-avisos"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "83c8ba9c-c81e-480c-8a98-942484684302",
+  "activeVersionId": "83c8ba9c-c81e-480c-8a98-942484684302",
+  "versionCounter": 10,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-02T20:43:32.031Z",
+      "createdAt": "2026-11-02T20:43:32.031Z",
+      "role": "workflow:owner",
+      "workflowId": "zexjeCge1ktfuYw7",
+      "projectId": "FjAFfRwXytDDKSmo",
+      "project": {
+        "updatedAt": "2026-11-01T18:20:02.787Z",
+        "createdAt": "2026-11-01T18:08:05.868Z",
+        "id": "FjAFfRwXytDDKSmo",
+        "name": "Tavares Bastos <tvrs.digital54@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "defd4eb6-25c8-4f48-9c3c-82e5c3313e73"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 83c8ba9c",
+    "description": ""
+  }
+}

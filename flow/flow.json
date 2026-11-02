@@ -45,7 +45,7 @@
       "options": [
         { "label": "Precision", "next": "PRECISION" },
         { "label": "Jazz Bass", "next": "JAZZBASS" },
-        { "label": "Jazz Precision", "next": "REC_PJ" }
+        { "label": "Precision Jazz", "next": "REC_PJ" }
       ]
     },
     "PRECISION": {

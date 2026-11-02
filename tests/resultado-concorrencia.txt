@@ -1,0 +1,3 @@
+ok     A: 20 pessoas ao mesmo tempo (1598 ms ate todos os eventos)
+       latencia por mensagem: media 221 ms | max 348 ms | n=20
+ok     B: mesma mensagem 5 vezes ao mesmo tempo (eventos: 1)

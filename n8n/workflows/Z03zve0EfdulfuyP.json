@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T02:17:22.111Z",
+  "updatedAt": "2026-11-02T20:49:19.889Z",
   "createdAt": "2026-11-01T23:26:40.723Z",
   "id": "Z03zve0EfdulfuyP",
   "name": "02-mensagens",
@@ -115,7 +115,7 @@
       ],
       "id": "2cd516e7-7843-40e9-80f4-033eecab7dbf",
       "name": "Deduplicar mid",
-      "alwaysOutputData": true,
+      "alwaysOutputData": false,
       "credentials": {
         "postgres": {
           "id": "yQhMybHBhJMyg1vO",
@@ -134,7 +134,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        1120,
+        1184,
         -96
       ],
       "id": "13d18d4a-63e5-40a5-b925-84613da0d461",
@@ -535,6 +535,51 @@
           "name": "bot-db"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "bae7f433-3dcc-4043-8785-8ca0a37e2203",
+              "leftValue": "={{ $json.mid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1040,
+        32
+      ],
+      "id": "e0199f96-dec1-4f51-89d6-a9b241d90d4d",
+      "name": "Mensagem nova?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        160
+      ],
+      "id": "886dc0d8-324f-443c-a3c4-9680de21b207",
+      "name": "Ignorar (Mensagem Repetida)"
     }
   ],
   "connections": {
@@ -593,7 +638,7 @@
       "main": [
         [
           {
-            "node": "Abrir sessão",
+            "node": "Mensagem nova?",
             "type": "main",
             "index": 0
           }
@@ -796,11 +841,33 @@
           }
         ]
       ]
+    },
+    "Mensagem nova?": {
+      "main": [
+        [
+          {
+            "node": "Abrir sessão",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignorar (Mensagem Repetida)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "zexjeCge1ktfuYw7",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": {
@@ -808,9 +875,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "8d61ae5e-ff28-45a3-bbca-c9148bd28749",
-  "activeVersionId": "8d61ae5e-ff28-45a3-bbca-c9148bd28749",
-  "versionCounter": 139,
+  "versionId": "64a12d8f-cb2b-4313-b890-3db00d46cdfb",
+  "activeVersionId": "64a12d8f-cb2b-4313-b890-3db00d46cdfb",
+  "versionCounter": 153,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -835,7 +902,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 8d61ae5e",
+    "name": "Version 64a12d8f",
     "description": ""
   }
 }
