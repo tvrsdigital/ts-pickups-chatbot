@@ -26,6 +26,7 @@ ok     #25 Captador de baixo > Precision Jazz > Falar com atendente
 ok     #26 Captador de baixo > Precision Jazz > Comprar
 ok     #27 Captador de baixo > Precision Jazz > Finalizar conversa
 ok     #28 Falar com atendente
+ok     #29 Não quero o robô
 
-28/28 caminhos OK pelo n8n
-Latência por mensagem: média 49 ms | p95 55 ms | máx 182 ms | n=131
+29/29 caminhos OK pelo n8n
+Latência por mensagem: média 57 ms | p95 72 ms | máx 176 ms | n=133

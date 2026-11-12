@@ -34,7 +34,7 @@
         },
         "produto": { "type": "string" },
         "next": { "type": "string" },
-        "marker": { "enum": ["HANDOFF", "END"] }
+        "marker": { "enum": ["HANDOFF", "END", "OPTOUT"] }
       },
       "additionalProperties": false,
       "oneOf": [

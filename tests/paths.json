@@ -511,5 +511,17 @@
       "MENU",
       "ATENDENTE"
     ]
+  },
+  {
+    "id": 29,
+    "clicks": [
+      "Não quero o robô"
+    ],
+    "terminal": "OPTOUT",
+    "produto": null,
+    "nodes": [
+      "MENU",
+      "SEM_ROBO"
+    ]
   }
 ]

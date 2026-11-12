@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Validar fluxo e gerar os 28 caminhos
+      - name: Validar fluxo e gerar os 29 caminhos
         run: node tests/generate-paths.js
       - name: Conferir rótulos dos botões (máx. 20 caracteres)
         run: node tests/check-labels.js

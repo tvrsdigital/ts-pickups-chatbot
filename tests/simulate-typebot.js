@@ -45,7 +45,7 @@ async function percorrer(caminho) {
   }
 
   const junto = todos.join('\n');
-  const marcador = caminho.terminal === 'HANDOFF' ? '[[HANDOFF]]' : '[[END]]';
+  const marcador = `[[${caminho.terminal}]]`;
   if (!junto.includes(marcador)) falhas.push(`final sem o marcador ${marcador}`);
   if (junto.includes('{{')) falhas.push('variável não resolvida ({{ ... }}) no texto');
 

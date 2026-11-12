@@ -1,12 +1,13 @@
 # Arquitetura
 
-## Fluxo de conversa (28 caminhos)
+## Fluxo de conversa (29 caminhos)
 
 ```mermaid
 flowchart TD
   MENU["Menu: Olá! Como posso ajudar?"] -->|Captador de guitarra| GUI[Qual modelo?]
   MENU -->|Captador de baixo| BAI[Qual modelo?]
   MENU -->|Falar com atendente| ATE[[Atendente humano]]
+  MENU -->|Não quero o robô| SEMROBO[[Robô desativado nesta conversa]]
 
   GUI -->|Single| ST[Recomenda ST]
   GUI -->|Humbucker| EST[Qual estilo?]
@@ -38,7 +39,7 @@ flowchart TD
   SITE -->|Finalizar conversa| FIM[[Fim da conversa]]
 ```
 
-Todas as nove recomendações levam ao mesmo bloco final (link do site) e, de lá, ao atendente ou ao fim. Total: **28 caminhos ponta a ponta** (19 terminam em atendente e 9 em fim de conversa).
+Todas as nove recomendações levam ao mesmo bloco final (link do site) e, de lá, ao atendente ou ao fim. Total: **29 caminhos ponta a ponta** (19 terminam em atendente e 9 em fim de conversa e 1 em "Não quero o robô", que desativa o robô naquela conversa).
 
 ## Pipeline do n8n (workflow `02-mensagens`)
 

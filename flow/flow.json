@@ -20,7 +20,8 @@
       "options": [
         { "label": "Captador de guitarra", "next": "GUITARRA" },
         { "label": "Captador de baixo", "next": "BAIXO" },
-        { "label": "Falar com atendente", "next": "ATENDENTE" }
+        { "label": "Falar com atendente", "next": "ATENDENTE" },
+        { "label": "Não quero o robô", "next": "SEM_ROBO" }
       ]
     },
 
@@ -85,6 +86,10 @@
     "ATENDENTE": {
       "text": "Você será atendido em breve. Tempo médio de resposta em horário de funcionamento: 05 minutos.\n\nHorário de funcionamento:\nseg - sex: 08:00 - 18:00\nsab: 10:00 - 15:00\ndom e feriados: fechado",
       "marker": "HANDOFF"
+    },
+    "SEM_ROBO": {
+      "text": "Combinado! Não vou mais responder automaticamente nesta conversa. Nossa equipe continua o atendimento por aqui.",
+      "marker": "OPTOUT"
     },
     "FIM": {
       "text": "Obrigado pelo contato! Quando precisar, é só chamar. 🎸",

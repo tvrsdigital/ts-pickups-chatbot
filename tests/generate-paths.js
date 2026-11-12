@@ -19,7 +19,7 @@ const opt = (name, def) => {
   args.splice(i, 2);
   return v;
 };
-const EXPECT = Number(opt('--expect', '28'));
+const EXPECT = Number(opt('--expect', '29'));
 const OUT = opt('--out', path.join(__dirname, 'paths.json'));
 const flowFile = args[0] || path.join(__dirname, '..', 'flow', 'flow.json');
 const prodFile = args[1] || path.join(__dirname, '..', 'flow', 'produtos.json');
@@ -55,7 +55,7 @@ for (const [id, n] of Object.entries(nodes)) {
     }
   }
   if (n.next !== undefined && !nodes[n.next]) err(`${id}: next aponta para nó inexistente "${n.next}"`);
-  if (n.marker !== undefined && !['HANDOFF', 'END'].includes(n.marker)) err(`${id}: marker inválido "${n.marker}"`);
+  if (n.marker !== undefined && !['HANDOFF', 'END', 'OPTOUT'].includes(n.marker)) err(`${id}: marker inválido "${n.marker}"`);
   if (n.produto !== undefined && !produtos[n.produto]) err(`${id}: produto "${n.produto}" não existe em produtos.json`);
 }
 

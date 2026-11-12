@@ -91,6 +91,8 @@ async function percorrer(caminho) {
   }
 
   const paths = JSON.parse(fs.readFileSync('tests/paths.json', 'utf8'));
+  const limparOptouts = () => sql("DELETE FROM optouts WHERE user_hash IN (" + paths.map((c) => `'${hash('sim-' + c.id)}'`).join(',') + ")");
+  limparOptouts();
   let ok = 0;
   const latencias = [];
   for (const c of paths) {
@@ -112,5 +114,6 @@ async function percorrer(caminho) {
   sql("DELETE FROM events WHERE user_hash IN (" + paths.map((c) => `'${hash('sim-' + c.id)}'`).join(',') + ")");
   sql("DELETE FROM sessions WHERE igsid LIKE 'sim-%'");
   sql("DELETE FROM processed_mids WHERE mid LIKE 'sim-%'");
+  limparOptouts();
   process.exit(ok === paths.length ? 0 : 1);
 })();
