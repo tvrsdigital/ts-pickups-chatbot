@@ -31,6 +31,7 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       N8N_WEBHOOK_URL: https://${NGROK_DOMAIN}/
+      WEBHOOK_URL: https://${NGROK_DOMAIN}/
       N8N_PROXY_HOPS: "1"
       N8N_SECURE_COOKIE: "false"
       N8N_DIAGNOSTICS_ENABLED: "false"

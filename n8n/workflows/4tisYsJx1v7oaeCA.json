@@ -1,0 +1,285 @@
+{
+  "updatedAt": "2026-11-12T03:08:49.107Z",
+  "createdAt": "2026-11-12T02:53:21.744Z",
+  "id": "4tisYsJx1v7oaeCA",
+  "name": "05-telegram-botoes",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "859d0b21-994e-46ec-ab28-30fb9ced7abf",
+      "name": "Telegram Trigger",
+      "webhookId": "9c2b6183-1969-453e-802e-80d88cfd0456",
+      "credentials": {
+        "telegramApi": {
+          "id": "sfdvuK67fm223i82",
+          "name": "telegram-avisos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = $json.callback_query;\nconst [acao, igsid] = String(q.data || '').split(':');\nconst autorizado =\n  String(q.from.id) === String($env.TELEGRAM_CHAT_ID) &&\n  ['off', 'on'].includes(acao) &&\n  /^\\d+$/.test(igsid || '');\nreturn {\n  json: {\n    autorizado, acao, igsid,\n    query_id: q.id,\n    chat_id: q.message.chat.id,\n    message_id: q.message.message_id,\n    texto: q.message.text,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "808bc3d7-f5e7-4b17-a9ac-f50730c21cfc",
+      "name": "Interpretar toque"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "c2995749-f052-42a5-acc7-480feb2ed386",
+              "leftValue": "={{ $json.autorizado }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        448,
+        0
+      ],
+      "id": "11352368-2291-4184-8cbe-b771af2352d8",
+      "name": "Autorizado?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        208
+      ],
+      "id": "fed3fa87-fa4d-42e5-b690-3e60040a807c",
+      "name": "Ignorar"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH h AS (\n  SELECT encode(sha256(convert_to($1::text || $3::text, 'UTF8')), 'hex') AS user_hash\n),\nd AS (\n  DELETE FROM optouts\n  WHERE $2::text = 'on' AND user_hash = (SELECT user_hash FROM h)\n)\nINSERT INTO optouts (user_hash, source)\nSELECT user_hash, 'atendente' FROM h WHERE $2::text = 'off'\nON CONFLICT (user_hash) DO NOTHING;",
+        "options": {
+          "queryReplacement": "={{ [ $json.igsid, $json.acao, $env.HASH_SALT ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "4ed660a7-2b4f-4144-af3e-51c4263f19ec",
+      "name": "Gravar decisão do atendente",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "queryId": "={{ $('Interpretar toque').item.json.query_id }}",
+        "additionalFields": {
+          "text": "={{ $('Interpretar toque').item.json.acao === 'off' ? 'Robô desativado para este cliente' : 'Robô reativado para este cliente' }}"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        -96
+      ],
+      "id": "5fcc356c-56b7-49f5-b1ba-01667576502a",
+      "name": "Responder toque",
+      "webhookId": "ff156000-7c8e-4f71-8dcc-cb5cf591d7ad",
+      "credentials": {
+        "telegramApi": {
+          "id": "sfdvuK67fm223i82",
+          "name": "telegram-avisos"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Interpretar toque').item.json.chat_id }}",
+        "messageId": "={{ $('Interpretar toque').item.json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "={{ $('Interpretar toque').item.json.texto.replace(/\\n\\n[🔕🔔] Robô .*$/u, '') + '\\n\\n' + ($('Interpretar toque').item.json.acao === 'off' ? '🔕 Robô desativado para este cliente.' : '🔔 Robô reativado para este cliente.') }}",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $('Interpretar toque').item.json.acao === 'off' ? '🔔 Reativar robô' : '🔕 Desativar robô para este cliente' }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $('Interpretar toque').item.json.acao === 'off' ? 'on:' : 'off:' }}{{ $('Interpretar toque').item.json.igsid }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "3462bba9-29d7-4116-ab44-e1f00e34de41",
+      "name": "Trocar botão",
+      "webhookId": "5903cbd2-810c-4e7a-bf4b-759c4364e215",
+      "credentials": {
+        "telegramApi": {
+          "id": "sfdvuK67fm223i82",
+          "name": "telegram-avisos"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Interpretar toque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Interpretar toque": {
+      "main": [
+        [
+          {
+            "node": "Autorizado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Autorizado?": {
+      "main": [
+        [
+          {
+            "node": "Gravar decisão do atendente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignorar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gravar decisão do atendente": {
+      "main": [
+        [
+          {
+            "node": "Responder toque",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder toque": {
+      "main": [
+        [
+          {
+            "node": "Trocar botão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "654f0f7a-7c38-4a27-89c0-6489a67a6173",
+  "activeVersionId": "654f0f7a-7c38-4a27-89c0-6489a67a6173",
+  "versionCounter": 30,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-11-12T02:53:21.747Z",
+      "createdAt": "2026-11-12T02:53:21.747Z",
+      "role": "workflow:owner",
+      "workflowId": "4tisYsJx1v7oaeCA",
+      "projectId": "FjAFfRwXytDDKSmo",
+      "project": {
+        "updatedAt": "2026-11-01T18:20:02.787Z",
+        "createdAt": "2026-11-01T18:08:05.868Z",
+        "id": "FjAFfRwXytDDKSmo",
+        "name": "Tavares Bastos <tvrs.digital54@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "defd4eb6-25c8-4f48-9c3c-82e5c3313e73"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 654f0f7a",
+    "description": ""
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-02T20:49:19.889Z",
+  "updatedAt": "2026-11-12T02:48:54.683Z",
   "createdAt": "2026-11-01T23:26:40.723Z",
   "id": "Z03zve0EfdulfuyP",
   "name": "02-mensagens",
@@ -88,7 +88,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const conta = $env.IG_ACCOUNT_ID;\nconst body = $input.first().json.body;\nconst eventos = [];\n\nfor (const entry of body.entry || []) {\n  const lista = [];\n  for (const m of entry.messaging || []) lista.push(m);                 // formato de DMs reais\n  for (const c of entry.changes || []) {                               // formato do botão Teste\n    if (c.field === 'messages') lista.push(c.value);\n  }\n\n  for (const e of lista) {\n    const msg = e.message;\n    if (!msg || !e.sender) continue;                                   // ignora leituras, reações etc.\n    if (msg.is_echo || e.sender.id === conta) continue;                // ignora eco das nossas respostas\n\n    eventos.push({\n      json: {\n        igsid: e.sender.id,\n        mid: msg.mid,\n        texto: msg.text || '',\n        payload: msg.quick_reply ? msg.quick_reply.payload : null,\n        anexos: (msg.attachments || []).length,\n        timestamp: e.timestamp,\n        t0: Date.now(),\n      },\n    });\n  }\n}\n\nreturn eventos;"
+        "jsCode": "const conta = $env.IG_ACCOUNT_ID;\nconst body = $input.first().json.body;\nconst eventos = [];\n\nfor (const entry of body.entry || []) {\n  const lista = [];\n  for (const m of entry.messaging || []) lista.push(m);                 // formato de DMs reais\n  for (const c of entry.changes || []) {                               // formato do botão Teste\n    if (c.field === 'messages') lista.push(c.value);\n  }\n\n  for (const e of lista) {\n    const msg = e.message;\n    if (!msg || !e.sender) continue;                                   // ignora leituras, reações etc.\n    if (msg.is_echo || e.sender.id === conta) continue;                // ignora eco das nossas respostas\n\n    eventos.push({\n      json: {\n        igsid: e.sender.id,\n        mid: msg.mid,\n        texto: msg.text || '',\n        payload: msg.quick_reply ? msg.quick_reply.payload : null,\n        anexos: (msg.attachments || []).length,\n        timestamp: e.timestamp,\n        t0: Date.now(),\n      },\n    });\n  }\n}\nreturn eventos;"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -134,8 +134,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        1184,
-        -96
+        1568,
+        -112
       ],
       "id": "13d18d4a-63e5-40a5-b925-84613da0d461",
       "name": "Abrir sessão",
@@ -174,8 +174,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        1344,
-        -96
+        1712,
+        -112
       ],
       "id": "11d95dc0-e04d-49d1-9d9e-29c6022136ad",
       "name": "Bot pausado?"
@@ -185,8 +185,8 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1568,
-        -192
+        1904,
+        -288
       ],
       "id": "9b97721e-e6c0-4825-ba5f-f9bee548e62d",
       "name": "Ignorar (atendente assumiu)"
@@ -219,8 +219,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        1568,
-        0
+        1840,
+        -16
       ],
       "id": "fdf2b25b-25bc-41db-8aa7-c16b4ec9e2d8",
       "name": "Tem sessão Typebot?"
@@ -237,7 +237,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1792,
+        2016,
         -96
       ],
       "id": "822eb5ec-59ab-4797-95a6-0d92c05f1bf4",
@@ -254,7 +254,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        2032,
+        2256,
         -256
       ],
       "id": "c2c088f0-bb07-4e18-9b12-22b8563743df",
@@ -278,7 +278,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1792,
+        2016,
         96
       ],
       "id": "df620fd7-fdf9-4638-a231-11e0693e05a1",
@@ -288,12 +288,12 @@
     {
       "parameters": {
         "mode": "runOnceForEachItem",
-        "jsCode": "const ev = $('Extrair eventos').item.json;\nconst r = $json;\n\nconst INVALIDO = 'Invalid message. Please, try again.';\nconst MSG_INVALIDO = 'Não entendi. Por favor, toque em um dos botões abaixo.';\n\n// richText do Typebot: blocos com filhos; extrai só o texto\nconst textoDe = (nos) => (nos || [])\n  .map((n) => (n.text !== undefined ? n.text : textoDe(n.children)))\n  .join('');\nconst paragrafos = (rich) => (rich || []).map((b) => textoDe(b.children)).join('\\n');\n\nlet textos = [];\nfor (const m of r.messages || []) {\n  if (m.type === 'text' && m.content && m.content.richText) {\n    let t = paragrafos(m.content.richText).trim();\n    if (t === INVALIDO) t = MSG_INVALIDO;\n    if (t) textos.push(t);\n  }\n}\n\nlet handoff = false;\nlet fim = false;\ntextos = textos\n  .map((t) => {\n    if (t.includes('[[HANDOFF]]')) handoff = true;\n    if (t.includes('[[END]]')) fim = true;\n    return t.replace('[[HANDOFF]]', '').replace('[[END]]', '').trim();\n  })\n  .filter(Boolean);\n\nconst botoes = r.input && r.input.type === 'choice input'\n  ? r.input.items.map((i) => i.content).slice(0, 13)\n  : [];\n\nreturn { json: { igsid: ev.igsid, textos, botoes, handoff, fim } };"
+        "jsCode": "const ev = $('Extrair eventos').item.json;\nconst r = $json;\n\nconst INVALIDO = 'Invalid message. Please, try again.';\nconst MSG_INVALIDO = 'Não entendi. Por favor, toque em um dos botões abaixo.';\n\n// richText do Typebot: blocos com filhos; extrai só o texto\nconst textoDe = (nos) => (nos || [])\n  .map((n) => (n.text !== undefined ? n.text : textoDe(n.children)))\n  .join('');\nconst paragrafos = (rich) => (rich || []).map((b) => textoDe(b.children)).join('\\n');\n\nlet textos = [];\nfor (const m of r.messages || []) {\n  if (m.type === 'text' && m.content && m.content.richText) {\n    let t = paragrafos(m.content.richText).trim();\n    if (t === INVALIDO) t = MSG_INVALIDO;\n    if (t) textos.push(t);\n  }\n}\n\nlet handoff = false;\nlet fim = false;\nlet optout = false;\ntextos = textos\n  .map((t) => {\n    if (t.includes('[[HANDOFF]]')) handoff = true;\n    if (t.includes('[[END]]')) fim = true;\n    if (t.includes('[[OPTOUT]]')) { optout = true; fim = true; }\n    return t\n      .replace('[[HANDOFF]]', '')\n      .replace('[[END]]', '')\n      .replace('[[OPTOUT]]', '')\n      .trim();\n  })\n  .filter(Boolean);\n\nconst botoes = r.input && r.input.type === 'choice input'\n  ? r.input.items.map((i) => i.content).slice(0, 13)\n  : [];\n\nreturn { json: { igsid: ev.igsid, textos, botoes, handoff, fim, optout } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2128,
+        2352,
         0
       ],
       "id": "725a8d8b-4477-4a1d-b7c0-28f0928efc36",
@@ -306,7 +306,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2352,
+        2576,
         0
       ],
       "id": "c81ba2ed-cfba-440d-bc3e-a3ead8d0d32c",
@@ -339,7 +339,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        2576,
+        2800,
         0
       ],
       "id": "e44e31c1-7a97-426c-ad64-958541071e98",
@@ -350,7 +350,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        2800,
+        3024,
         -96
       ],
       "id": "1426f551-fc59-4718-9204-18ff73f49064",
@@ -370,7 +370,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        2800,
+        3024,
         96
       ],
       "id": "d2e1acd3-cc14-48e0-86d5-16863c277c92",
@@ -412,7 +412,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        3152,
+        3376,
         -16
       ],
       "id": "468c1309-f357-4c2b-9c06-102000261d4a",
@@ -421,15 +421,15 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE sessions\nSET typebot_session = NULL,\n    handoff_until = CASE WHEN $2::boolean THEN now() + interval '24 hours' ELSE handoff_until END,\n    updated_at = now()\nWHERE igsid = $1;",
+        "query": "WITH u AS (\n  UPDATE sessions\n  SET typebot_session = NULL,\n      handoff_until = CASE WHEN $2::boolean THEN now() + interval '24 hours' ELSE handoff_until END,\n      updated_at = now()\n  WHERE igsid = $1::text\n)\nINSERT INTO optouts (user_hash, source)\nSELECT encode(sha256(convert_to($1::text || $4::text, 'UTF8')), 'hex'), 'cliente'\nWHERE $3::boolean\nON CONFLICT (user_hash) DO NOTHING;",
         "options": {
-          "queryReplacement": "={{ $('Preparar envios').item.json.igsid }},{{ $('Preparar envios').item.json.handoff }}"
+          "queryReplacement": "={{ [ $('Preparar envios').item.json.igsid, $('Preparar envios').item.json.handoff, $('Montar Resposta').first().json.optout, $env.HASH_SALT ] }}"
         }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        3376,
+        3600,
         -112
       ],
       "id": "d726b52a-ad71-4c7d-8f27-fb6d58b031bc",
@@ -469,7 +469,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.4,
       "position": [
-        3600,
+        3824,
         -112
       ],
       "id": "d43b1a4d-4ae1-4ca1-bca4-5a2fa85e0573",
@@ -478,7 +478,24 @@
     {
       "parameters": {
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
-        "text": "🔔 Cliente pediu atendimento no Instagram (@ts_pickups). Abra as mensagens e responda o quanto antes: https://www.instagram.com/direct/inbox/ O bot ficará em silêncio nesta conversa por 24 horas.",
+        "text": "=🔔 Cliente pediu atendimento no Instagram (@ts_pickups).\n👤 Cliente: {{ (() => { const esc = s => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); const u = $json.username ? '<code>@' + esc($json.username) + '</code>' : ''; const n = esc($json.name); if (!n && !u) return 'não foi possível identificar'; if (!n || n === esc($json.username)) return u || n; return u ? n + ' (' + u + ')' : n; })() }}\nAbra as mensagens e responda o quanto antes: https://www.instagram.com/direct/inbox/\nO bot ficará em silêncio nesta conversa por 24 horas.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔕 Desativar robô para este cliente",
+                    "additionalFields": {
+                      "callback_data": "=off:{{ $('Preparar envios').first().json.igsid }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
@@ -487,8 +504,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        3824,
-        -208
+        4304,
+        -64
       ],
       "id": "894c6a70-a6b0-4eb5-9caa-84799eec5a4c",
       "name": "Avisar atendente",
@@ -507,7 +524,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3168,
+        3392,
         352
       ],
       "id": "fd60608d-d3b0-407d-8881-4bbb46f72c7d",
@@ -524,7 +541,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.8,
       "position": [
-        3392,
+        3616,
         352
       ],
       "id": "1e32b0d2-7bc1-41ff-84aa-e05de2a45440",
@@ -565,7 +582,7 @@
       "typeVersion": 2.4,
       "position": [
         1040,
-        32
+        0
       ],
       "id": "e0199f96-dec1-4f51-89d6-a9b241d90d4d",
       "name": "Mensagem nova?"
@@ -575,11 +592,102 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1184,
-        160
+        1200,
+        112
       ],
       "id": "886dc0d8-324f-443c-a3c4-9680de21b207",
       "name": "Ignorar (Mensagem Repetida)"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/{{ $env.GRAPH_VERSION }}/{{ $('Preparar envios').first().json.igsid }}?fields=name,username",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        4096,
+        -64
+      ],
+      "id": "0d0aa242-6f17-400a-b898-bc699ef01439",
+      "name": "Buscar perfil do cliente",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DbkdneWcowXSAHGG",
+          "name": "ig-token"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "     SELECT EXISTS (\n       SELECT 1 FROM optouts\n       WHERE user_hash = encode(sha256(convert_to($1 || $2, 'UTF8')), 'hex')\n     ) AS desativado;",
+        "options": {
+          "queryReplacement": "=     {{ [$('Extrair eventos').item.json.igsid, $env.HASH_SALT] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.8,
+      "position": [
+        1216,
+        -112
+      ],
+      "id": "831a444e-b220-4e21-9464-d8e2174f3e47",
+      "name": "Consultar desativação",
+      "credentials": {
+        "postgres": {
+          "id": "yQhMybHBhJMyg1vO",
+          "name": "bot-db"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1568,
+        96
+      ],
+      "id": "a52ff55a-18c0-4991-b473-cb9fad9df1f7",
+      "name": "Ignorar (Robô desativado)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "5fe21eb3-9077-4edc-97fd-3a4310bddd73",
+              "leftValue": "={{ $json.desativado }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1392,
+        -128
+      ],
+      "id": "c1105fea-02a9-48a5-90a2-cf5732d423be",
+      "name": "Robô ativo?"
     }
   ],
   "connections": {
@@ -824,7 +932,7 @@
       "main": [
         [
           {
-            "node": "Avisar atendente",
+            "node": "Buscar perfil do cliente",
             "type": "main",
             "index": 0
           }
@@ -846,7 +954,7 @@
       "main": [
         [
           {
-            "node": "Abrir sessão",
+            "node": "Consultar desativação",
             "type": "main",
             "index": 0
           }
@@ -854,6 +962,46 @@
         [
           {
             "node": "Ignorar (Mensagem Repetida)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar perfil do cliente": {
+      "main": [
+        [
+          {
+            "node": "Avisar atendente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consultar desativação": {
+      "main": [
+        [
+          {
+            "node": "Robô ativo?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Robô ativo?": {
+      "main": [
+        [
+          {
+            "node": "Abrir sessão",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ignorar (Robô desativado)",
             "type": "main",
             "index": 0
           }
@@ -875,9 +1023,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "64a12d8f-cb2b-4313-b890-3db00d46cdfb",
-  "activeVersionId": "64a12d8f-cb2b-4313-b890-3db00d46cdfb",
-  "versionCounter": 153,
+  "versionId": "e460ab9e-15b6-4160-ba48-80ab5a0c8d87",
+  "activeVersionId": "e460ab9e-15b6-4160-ba48-80ab5a0c8d87",
+  "versionCounter": 213,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],
@@ -902,7 +1050,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 64a12d8f",
+    "name": "Version e460ab9e",
     "description": ""
   }
 }
