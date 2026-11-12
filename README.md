@@ -32,7 +32,7 @@ flowchart LR
 - **Typebot** guarda o fluxo de conversa (menus, textos e recomendações).
 - **n8n** faz a ponte com a Meta: valida a assinatura, evita respostas duplicadas, mantém a sessão e envia as respostas.
 - **PostgreSQL** guarda sessões, controle de mensagens, métricas anonimizadas, a lista de quem não quer o robô e configurações.
-- **Túnel (ngrok)** expõe o n8n local para a Meta durante o desenvolvimento.
+- **Túnel (ngrok)** expõe o n8n para a Meta.
 
 ## Por que essas ferramentas
 
@@ -42,7 +42,7 @@ flowchart LR
 | Integrar com o Instagram e orquestrar | n8n Community | Fluxos visuais, nós de Postgres e Telegram, sem custo |
 | Persistência | PostgreSQL 16 | Simples, robusto, já usado pelo Typebot |
 | Ambiente reproduzível | Docker Compose | Um comando sobe tudo |
-| Exposição do webhook | ngrok (plano gratuito) | Domínio fixo gratuito para desenvolvimento |
+| Exposição do webhook | ngrok (plano gratuito) | Domínio fixo gratuito |
 | Aviso ao atendente | Telegram Bot | Gratuito e imediato |
 | E-mails de login do Typebot | Mailpit | Caixa de entrada falsa local |
 
@@ -106,7 +106,7 @@ docs/        política de privacidade (GitHub Pages) e documentação
 - **Plataforma em mudança.** O login do Instagram usado em guias antigos (tokens de 60 dias) não estava disponível para apps novos. O projeto usa o **login unificado** com token de usuário do sistema, que não expira. Por isso o antigo workflow `03-renovar-token` deixou de existir e a numeração dos workflows pula do 02 para o 04.
 - **Acesso da Meta.** Em novembro de 2026, um app em modo Live com acesso padrão, usado só na conta do próprio negócio, atendeu contas sem função no app, sem passar por revisão. É uma observação de um único app, sujeita a mudanças da Meta.
 - **Texto livre.** O Typebot responde "Invalid message" em inglês quando o cliente digita em vez de clicar. A versão usada não permite alterar essa mensagem; o n8n substitui o texto por uma frase em português. É uma troca por texto exato e pode quebrar se o Typebot mudar a frase.
-- **Execução local.** O bot só funciona com o computador ligado e o túnel ativo. Hospedagem 24 horas é trabalho futuro.
+- **Hospedagem.** O robô roda 24 horas em um servidor doméstico (ZimaOS), com reinício automático e backup diário em um segundo SSD. O túnel gratuito do ngrok é um ponto único de falha: se o servidor ou a internet caírem, o robô para de responder.
 
 ## Privacidade e LGPD
 
@@ -115,7 +115,6 @@ O robô guarda o identificador do Instagram apenas na tabela de sessões (apagad
 ## Trabalho futuro
 
 - Testes de robustez automáticos e de carga maior (inclui queda do banco de dados).
-- Hospedagem 24 horas gratuita.
 
 ## Licença
 
