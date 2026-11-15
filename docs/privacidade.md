@@ -10,9 +10,9 @@ permalink: /privacidade/
 
 ## 1. Quem somos
 
-A **TS PickUps** ([NOME EMPRESARIAL OU DO RESPONSÁVEL]) fabrica captadores artesanais para guitarra e baixo. Esta política explica como tratamos dados pessoais no atendimento automatizado feito por mensagem direta no Instagram (@ts_pickups).
+A **TS PickUps** fabrica captadores artesanais para guitarra e baixo. Esta política explica como tratamos dados pessoais no atendimento automatizado feito por mensagem direta no Instagram (@ts_pickups).
 
-Contato do responsável pelo tratamento de dados: [E-MAIL DE CONTATO].
+Contato do responsável pelo tratamento de dados: tvrs.digital54@gmail.com
 
 ## 2. Atendimento automatizado
 
@@ -55,7 +55,7 @@ Não vendemos dados pessoais.
 
 ## 7. Seus direitos (LGPD, art. 18)
 
-Você pode solicitar confirmação do tratamento, acesso, correção, anonimização, eliminação, portabilidade e informações sobre compartilhamento, além de revogar o consentimento. Escreva para [E-MAIL DE CONTATO].
+Você pode solicitar confirmação do tratamento, acesso, correção, anonimização, eliminação, portabilidade e informações sobre compartilhamento, além de revogar o consentimento. Escreva para tvrs.digital54@gmail.com. 
 
 ## 8. Como excluir seus dados
 
